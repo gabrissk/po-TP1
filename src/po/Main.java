@@ -22,13 +22,15 @@ public class Main {
         System.out.println(Arrays.toString(pl.getVar_type()));
         String func[] = scan.nextLine().split(" ");
         //System.out.println(Arrays.toString(func));
+        pl.lp.add(new ArrayList<>());
         for(int i=0; i<vars;i++) {
+            pl.getFunc().add(Double.parseDouble(func[i]));
             pl.setFunc(i, Double.parseDouble(func[i]));
         }
-        //pl.setFunc(pl.getFunc().length-1, 0);
+        pl.getFunc().add(pl.getFunc().size(), 0.0);
         //System.out.println(Arrays.toString(pl.getFunc()));
         for(int i=0; i< num_restr; i++) {
-            pl.restrictions.add(new ArrayList<>());
+            pl.lp.add(new ArrayList<>());
             String restr = scan.nextLine();
             String[] split = restr.split(" ");
             int j;
@@ -41,8 +43,16 @@ public class Main {
             //System.out.println(pl.restrictions.get(i));
             //System.out.println(pl.restr_type[i]);
         }
-
+        System.out.println();
         pl.printPl();
+        pl.nNegativity();
+        System.out.println();
+        pl.printPl();
+        System.out.println();
+        pl.FPI();
+        pl.printPl();
+
+
 
 
     }
