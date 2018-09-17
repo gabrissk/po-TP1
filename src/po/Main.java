@@ -22,12 +22,10 @@ public class Main {
         for(int i=0; i< num_restr; i++) {
             pl.restrictions.add(new ArrayList<>());
             String restr = scan.nextLine();
-            System.out.println(restr);
             String[] split = restr.split(" ");
             int j;
             for (j=0; j< vars; j++) {
                 double var = Double.parseDouble(split[j]);
-                System.out.println(var);
                 pl.getRestriction(i).add(var);
             }
             pl.setRestr_type(i, split[j++].charAt(0));
