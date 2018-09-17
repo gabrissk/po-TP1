@@ -3,6 +3,7 @@ package po;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
@@ -14,11 +15,18 @@ public class Main {
         int num_restr = Integer.parseInt(scan.nextLine());
         System.out.println(num_restr);
         Pl pl = new Pl(vars, num_restr);
-        String var_types = scan.nextLine();
-        System.out.println(var_types);
-        // ...
-        String func = scan.nextLine();
-        System.out.println(func);
+        String[] var_types = scan.nextLine().split(" ");
+        for(int i: pl.var_type) {
+            pl.setVar_type(i, Integer.parseInt(var_types[i]));
+        }
+        System.out.println(Arrays.toString(pl.getVar_type()));
+        String func[] = scan.nextLine().split(" ");
+        //System.out.println(Arrays.toString(func));
+        for(int i=0; i<vars;i++) {
+            pl.setFunc(i, Double.parseDouble(func[i]));
+        }
+        //pl.setFunc(pl.getFunc().length-1, 0);
+        //System.out.println(Arrays.toString(pl.getFunc()));
         for(int i=0; i< num_restr; i++) {
             pl.restrictions.add(new ArrayList<>());
             String restr = scan.nextLine();
@@ -30,9 +38,11 @@ public class Main {
             }
             pl.setRestr_type(i, split[j++].charAt(0));
             pl.getRestriction(i).add(Double.parseDouble(split[j]));
-            System.out.println(pl.restrictions.get(i));
-
+            //System.out.println(pl.restrictions.get(i));
+            //System.out.println(pl.restr_type[i]);
         }
+
+        pl.printPl();
 
 
     }

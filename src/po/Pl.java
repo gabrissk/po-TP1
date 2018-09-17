@@ -1,6 +1,7 @@
 package po;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Pl {
     protected int vars;
@@ -14,7 +15,7 @@ public class Pl {
         this.vars = vars;
         this.var_type = new int[vars];
         this.num_restr = num_restr;
-        this.func = new double[vars];
+        this.func = new double[vars+1];
         this.restrictions = new ArrayList<>();
         this.restr_type= new char[num_restr];
     }
@@ -57,6 +58,11 @@ public class Pl {
 
     public double[] getFunc() {
         return func;
+    }
+
+    void printPl() {
+        System.out.println(Arrays.toString(this.func));
+        for(ArrayList<Double> restr:this.restrictions) System.out.println(restr);
     }
 
     public void setRestr_type(int i, char c) {
