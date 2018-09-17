@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Pl {
     protected int vars;
-    protected   int[] var_type;
+    protected int[] var_type;
     protected int num_restr;
     protected double[] func;
     protected ArrayList<ArrayList<Double>> restrictions;
@@ -51,10 +51,13 @@ public class Pl {
         this.num_restr = num_restr;
     }
 
-    public void setFunc(double[] func) {
-        this.func = func;
+    public void setFunc(int i, double val) {
+        this.func[i] = val;
     }
 
+    public double[] getFunc() {
+        return func;
+    }
 
     public void setRestr_type(int i, char c) {
         this.restr_type[i] = c;
