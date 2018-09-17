@@ -52,7 +52,7 @@ public class Main {
         pl.FPI();
         pl.printPl();
 
-
+        System.out.println(pl.checkB());
 
 
     }
