@@ -1,7 +1,6 @@
 package po;
 
-import javafx.util.Pair;
-
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -120,7 +119,7 @@ public class Pl {
         double sign = c == '<' ? 1 : -1;
         for(int j = 0;j < this.lp.size(); j++) {
             if(j==i) {
-                this.lp.get(j).add(this.lp.get(j).size()-1, (double)sign);
+                this.lp.get(j).add(this.lp.get(j).size()-1, sign);
                 continue;
             }
             this.lp.get(j).add(this.lp.get(j).size()-1, (double)0);
@@ -143,25 +142,54 @@ public class Pl {
         return true;
     }
 
-    public Pair<Integer, Integer> choose() {
-        Pair<Integer, Integer> p = null;
+    public Map.Entry<Integer, Integer> choose() {
+        Map.Entry<Integer, Integer> p = null;
         boolean unb = true;
-        for(int j=1; j< this.lp.size(); j++) {
-            ArrayList<Double> arr = this.lp.get(j);
-            if(arr.get(-1) < 0) {
+        for(int j=1; j< this.lp.get(0).size()-1; j++) {
+            if(this.lp.get(0).get(j) < 0) {
                 double choice = 9999999;
-                for (int i=0; i< arr.size(); i++) {
-                    double d = arr.get(i);
-                    if(d > 0 & (arr.get(-1)/d < choice)) {
-                        p = new Pair<>(i, j);
-                        unb = true;
+                for (int i=1; i <= this.num_restr; i++) {
+                    double d = this.lp.get(i).get(j);
+                    if(d > 0 && (this.lp.get(i).get(this.lp.get(i).size()-1)/d < choice)) {
+                        p = Map.entry(i, j);
+                        unb = false;
                     }
                 }
-                if(unb) return new Pair<>(-1,-1);
+                if(unb) return Map.entry(-11,-11);
                 return p;
             }
         }
         return null;
+    }
+
+    public boolean checkC() {
+        return !this.lp.get(0).stream().anyMatch(aDouble -> aDouble < 0);
+    }
+
+    public int solve() {
+        this.lp.set(0, (ArrayList<Double>) this.lp.get(0).stream().map(x -> x *= -1).collect(Collectors.toList()));
+        while(!checkC()) {
+            Map.Entry<Integer, Integer> entry = choose();
+            if(entry.getKey() == -11 && entry.getValue() == -11) return 1;
+            pivot(entry.getKey(), entry.getValue());
+        }
+        return 2;
+    }
+
+    public void pivot(int i, int j) {
+        double piv = this.lp.get(i).get(j);
+        ArrayList<Double> arr = this.lp.get(i);
+        for(double x: arr) {
+            x /= piv;
+        }
+        piv = arr.get(j);
+        for(int k=0; k< this.num_restr+1; k++) {
+            double mult = -(this.lp.get(k).get(j));
+            for(int m= 0; m< arr.size(); m++) {
+                if(k==i || this.lp.get(i).get(m) == 0) continue;
+                this.lp.get(k).set(m, this.lp.get(k).get(m) + (this.lp.get(i).get(m) * mult));
+            }
+        }
     }
 
 }
