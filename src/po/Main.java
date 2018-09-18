@@ -16,7 +16,7 @@ public class Main {
         System.out.println(num_restr);
         Pl pl = new Pl(vars, num_restr);
         String[] var_types = scan.nextLine().split(" ");
-        for(int i: pl.var_type) {
+        for(int i= 0; i< pl.var_type.length; i++) {
             pl.setVar_type(i, Integer.parseInt(var_types[i]));
         }
         System.out.println(Arrays.toString(pl.getVar_type()));
@@ -54,7 +54,7 @@ public class Main {
 
         int i = pl.solve();
         System.out.println();
-        pl.printPl();
+        //pl.printPl();
         System.out.println(i);
 
 

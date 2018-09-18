@@ -66,6 +66,7 @@ public class Pl {
     void printPl() {
         //System.out.println(Arrays.toString(this.func));
         for(ArrayList<Double> line:this.lp) System.out.println(line);
+        System.out.println();
     }
 
     public void setRestr_type(int i, char c) {
@@ -145,7 +146,7 @@ public class Pl {
     public Map.Entry<Integer, Integer> choose() {
         Map.Entry<Integer, Integer> p = null;
         boolean unb = true;
-        for(int j=1; j< this.lp.get(0).size()-1; j++) {
+        for(int j=0; j< this.lp.get(0).size()-1; j++) {
             if(this.lp.get(0).get(j) < 0) {
                 double choice = 9999999;
                 for (int i=1; i <= this.num_restr; i++) {
@@ -171,12 +172,15 @@ public class Pl {
         while(!checkC()) {
             Map.Entry<Integer, Integer> entry = choose();
             if(entry.getKey() == -11 && entry.getValue() == -11) return 1;
+            System.out.println(entry);
             pivot(entry.getKey(), entry.getValue());
         }
         return 2;
     }
 
     public void pivot(int i, int j) {
+        System.out.println("antes");
+        printPl();
         double piv = this.lp.get(i).get(j);
         ArrayList<Double> arr = this.lp.get(i);
         for(double x: arr) {
@@ -184,12 +188,14 @@ public class Pl {
         }
         piv = arr.get(j);
         for(int k=0; k< this.num_restr+1; k++) {
-            double mult = -(this.lp.get(k).get(j));
+            double mult = -(this.lp.get(k).get(j))/piv;
             for(int m= 0; m< arr.size(); m++) {
                 if(k==i || this.lp.get(i).get(m) == 0) continue;
                 this.lp.get(k).set(m, this.lp.get(k).get(m) + (this.lp.get(i).get(m) * mult));
             }
         }
+        System.out.println("dps");
+        printPl();
     }
 
 }
