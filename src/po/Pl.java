@@ -100,9 +100,21 @@ public class Pl {
         }
         int x = isCanon();
         while(x != 333) {
-            addColumn(x+1);
+            //addColumn(x+1);
+            chooseBaseVar();
             this.canon.add(x,x);
             x = isCanon();
+        }
+    }
+
+    private void chooseBaseVar() {
+        for(int j=0; j< this.lp.get(0).size()-1; j++) {
+            for(int i=1; i < this.num_restr+1; i++) {
+                if(this.lp.get(i).get(j) != 0) {
+                    pivot(i, j);
+                    break;
+                }
+            }
         }
     }
 
