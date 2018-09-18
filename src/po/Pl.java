@@ -22,7 +22,7 @@ public class Pl {
         this.restrictions = new ArrayList<>();
         this.restr_type= new char[num_restr];
         this.lp = new ArrayList<>();
-        this.canon = new ArrayList<>(num_restr);
+        this.canon = new ArrayList<>(vars+1);
     }
 
     public int getVars() {
@@ -88,32 +88,43 @@ public class Pl {
     }
 
     public void FPI() {
+        this.canon.add(333);
         for(int i=0; i< this.num_restr; i++) {
+            printPl();
+            System.out.println(this.lp.get(i+1));
+            if(this.lp.get(i+1).get(this.lp.get(0).size()-1) < 0) {
+                this.lp.set(i + 1, (ArrayList<Double>) this.lp.get(i + 1).stream().map(x -> x *= -1).collect(Collectors.toList()));
+            }
             if(this.restr_type[i] != '=') {
+                this.canon.ensureCapacity(i+1);
+                //System.out.println(canon);
                 addColumn(i+1, this.restr_type[i]);
                 if(this.restr_type[i] == '<') {
-                    this.canon.ensureCapacity(i+1);
-                    this.canon.add(i, i);
+                    this.canon.add(i+1, i);
                     //this.lp.set(i + 1, (ArrayList<Double>) this.lp.get(i + 1).stream().map(x -> x *= -1).collect(Collectors.toList()));
                 }
+                else this.canon.add(i+1, 5151);
             }
+            else this.canon.add(i+1, 5151);
         }
-        int x = isCanon();
+        int x = isCanon(1);
         while(x != 333) {
+            System.out.println(canon);
+            System.out.println(x);
             //addColumn(x+1);
-            chooseBaseVar();
+            this.canon.remove(x);
+            chooseBaseVar(x);
             this.canon.add(x,x);
-            x = isCanon();
+            x = isCanon(x+1);
         }
     }
 
-    private void chooseBaseVar() {
+    private void chooseBaseVar(int x) {
         for(int j=0; j< this.lp.get(0).size()-1; j++) {
-            for(int i=1; i < this.num_restr+1; i++) {
-                if(this.lp.get(i).get(j) != 0) {
-                    pivot(i, j);
-                    break;
-                }
+            //if(this.canon.contains(x)) break;
+            if(this.lp.get(x).get(j) != 0) {
+                pivot(x, j);
+                break;
             }
         }
     }
@@ -139,12 +150,12 @@ public class Pl {
         }
     }
 
-    public int isCanon() {
-        if(this.canon.size() != this.num_restr) {
-            for(int i=0; i < this.num_restr; i++) {
-                if(!this.canon.contains(i)) return i;
-            }
+    public int isCanon(int x) {
+
+        for(int i=x; i < this.num_restr+1; i++) {
+            if(this.canon.get(i) != i) return i;
         }
+
         return 333;
     }
 
@@ -181,6 +192,7 @@ public class Pl {
 
     public int solve() {
         this.lp.set(0, (ArrayList<Double>) this.lp.get(0).stream().map(x -> x *= -1).collect(Collectors.toList()));
+        printPl();
         while(!checkC()) {
             Map.Entry<Integer, Integer> entry = choose();
             if(entry.getKey() == -11 && entry.getValue() == -11) return 1;
@@ -195,8 +207,8 @@ public class Pl {
         printPl();
         double piv = this.lp.get(i).get(j);
         ArrayList<Double> arr = this.lp.get(i);
-        for(double x: arr) {
-            x /= piv;
+        for(int x=0; x< arr.size(); x++) {
+            arr.set(x, arr.get(x)/ piv);
         }
         piv = arr.get(j);
         for(int k=0; k< this.num_restr+1; k++) {
