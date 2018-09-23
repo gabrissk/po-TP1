@@ -167,12 +167,13 @@ public class Pl {
     public Map.Entry<Integer, Integer> choose(ArrayList<ArrayList<Double>> lp) {
         Map.Entry<Integer, Integer> p = null;
         boolean unb = true;
-        for(int j=0; j< lp.get(0).size()-1; j++) {
+        for(int j=this.num_restr; j< lp.get(0).size()-1; j++) {
             if(lp.get(0).get(j) < 0) {
                 double choice = 9999999;
                 for (int i=1; i <= this.num_restr; i++) {
                     double d = lp.get(i).get(j);
                     if(d > 0 && (lp.get(i).get(lp.get(i).size()-1)/d < choice)) {
+                        choice = lp.get(i).get(lp.get(i).size()-1)/d;
                         p = Map.entry(i, j);
                         unb = false;
                     }
@@ -185,13 +186,17 @@ public class Pl {
     }
 
     public boolean checkC(ArrayList<ArrayList<Double>> lp) {
-        for(int j = 0; j < lp.get(0).size()-1; j++)
+        for(int j = this.num_restr; j < lp.get(0).size()-1; j++)
             if(lp.get(0).get(j) < 0) return false;
         //return lp.get(0).stream().noneMatch(aDouble -> aDouble < 0);
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     public int solve(ArrayList<ArrayList<Double>> lp) {
+        //ArrayList<ArrayList<Double>> lp = (ArrayList<ArrayList<Double>>) list.clone();
+        addAux(lp);
+        printPl(lp);
         lp.set(0, (ArrayList<Double>) lp.get(0).stream().map(x -> x *= -1).collect(Collectors.toList()));
         while(!checkC(lp)) {
             Map.Entry<Integer, Integer> entry = choose(lp);
@@ -200,6 +205,20 @@ public class Pl {
             pivot(lp, entry.getKey(), entry.getValue());
         }
         return 2;
+    }
+
+    public void addAux(ArrayList<ArrayList<Double>> lp) {
+        for(int i= 0; i<= this.num_restr; i++) {
+            for(int j= 0; j < this.num_restr; j++) {
+                lp.get(i).add(0, 0.0);
+            }
+        }
+        for(int i= 1; i<= this.num_restr; i++) {
+            for(int j= 0; j < this.num_restr; j++) {
+                if(i==j+1) lp.get(i).set(j, 1.0);
+            }
+        }
+
     }
 
     public void pivot(ArrayList<ArrayList<Double>> lp, int i, int j) {
@@ -211,7 +230,7 @@ public class Pl {
             arr.set(x, arr.get(x) / piv);
         }
         piv = arr.get(j);
-        for(int k=0; k< this.num_restr+1; k++) {
+        for(int k=0; k<= this.num_restr; k++) {
             double mult = -(lp.get(k).get(j))/piv;
             for(int m= 0; m< arr.size(); m++) {
                 if(k==i || lp.get(i).get(m) == 0) continue;
@@ -252,6 +271,7 @@ public class Pl {
         aux.set(0, (ArrayList<Double>) aux.get(0).stream().map(x -> x *= -1).collect(Collectors.toList()));
         printPl(aux);
         solve(aux);
+        printPl(aux);
         System.out.println(aux.get(0).get(aux.get(0).size()-1) == 0);
 
     }
