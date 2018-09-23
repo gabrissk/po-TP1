@@ -1,6 +1,8 @@
 package po;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -14,7 +16,8 @@ public class Pl {
     protected char[] restr_type;
     protected ArrayList<ArrayList<Double>> lp;
     protected int[] canon;
-    protected  int basic;
+    protected int basic;
+    protected HashMap<Integer,Integer> bases;
 
     public Pl(int vars, int num_restr) {
         this.vars = vars;
@@ -27,6 +30,7 @@ public class Pl {
         this.canon = new int[num_restr+1];
         Arrays.fill(this.canon, -1);
         this.basic = 0;
+        this.bases =  new HashMap<>(this.num_restr);
     }
 
     public int getVars() {
@@ -41,7 +45,7 @@ public class Pl {
         return lp.get(i+1);
     }
 
-    public ArrayList<Double> getFunc() {return lp.get(0);}
+    public ArrayList<Double> getFunc() {return this.func;}
 
     public int[] getVar_type() {
         return var_type;
@@ -179,6 +183,7 @@ public class Pl {
                     }
                 }
                 if(unb) return Map.entry(-11,-11);
+                this.bases.put(p.getKey(), p.getValue());
                 return p;
             }
         }
@@ -193,9 +198,9 @@ public class Pl {
     }
 
     @SuppressWarnings("unchecked")
-    public int solve(ArrayList<ArrayList<Double>> lp) {
+    public int solve(ArrayList<ArrayList<Double>> lp, boolean flag) {
         //ArrayList<ArrayList<Double>> lp = (ArrayList<ArrayList<Double>>) list.clone();
-        addAux(lp);
+        if(flag) addAux(lp);
         printPl(lp);
         lp.set(0, (ArrayList<Double>) lp.get(0).stream().map(x -> x *= -1).collect(Collectors.toList()));
         while(!checkC(lp)) {
@@ -227,14 +232,19 @@ public class Pl {
         double piv = lp.get(i).get(j);
         ArrayList<Double> arr = lp.get(i);
         for(int x=0; x < arr.size();x++) {
-            arr.set(x, arr.get(x) / piv);
+            //arr.set(x, arr.get(x) / piv);
+            arr.set(x, Double.parseDouble(String.valueOf(new BigDecimal(arr.get(x)/piv).
+                    setScale(5, BigDecimal.ROUND_HALF_EVEN))));
         }
         piv = arr.get(j);
         for(int k=0; k<= this.num_restr; k++) {
             double mult = -(lp.get(k).get(j))/piv;
             for(int m= 0; m< arr.size(); m++) {
                 if(k==i || lp.get(i).get(m) == 0) continue;
-                lp.get(k).set(m, lp.get(k).get(m) + (lp.get(i).get(m) * mult));
+                lp.get(k).set(m, lp.get(k).get(m) +(lp.get(i).get(m) * mult));
+                //lp.get(k).set(m, Long.valueOf(Math.round(lp.get(k).get(m))).doubleValue());
+                lp.get(k).set(m, Double.parseDouble(String.valueOf(new BigDecimal(lp.get(k).get(m)).
+                        setScale(5, BigDecimal.ROUND_HALF_EVEN))));
             }
         }
         System.out.println("dps");
@@ -246,12 +256,12 @@ public class Pl {
     }
 
     @SuppressWarnings("unchecked")
-    public void auxLp() {
+    public ArrayList<ArrayList<Double>> auxLp() {
         ArrayList<ArrayList<Double>> aux = (ArrayList<ArrayList<Double>>) this.lp.clone();
         aux.set(0, (ArrayList<Double>) aux.get(0).stream().map(x -> x = 0.0).collect(Collectors.toList()));
         int cans = this.num_restr - this.basic;
         for(int i=0; i < this.num_restr; i++) {
-            if(this.canon[i] != -1) {
+            if(this.canon[i+1] != -1) {
                 //this.canon[i] = i;
                 continue;
             }
@@ -270,9 +280,37 @@ public class Pl {
 
         aux.set(0, (ArrayList<Double>) aux.get(0).stream().map(x -> x *= -1).collect(Collectors.toList()));
         printPl(aux);
-        solve(aux);
+        solve(aux, true);
         printPl(aux);
-        System.out.println(aux.get(0).get(aux.get(0).size()-1) == 0);
+        if(aux.get(0).get(aux.get(0).size()-1) != 0) {
+            System.out.println("Status: inviavel");
+            System.out.println("Certificado:");
+            printCertificate(aux);
+            System.exit(-1);
+        }
 
+        for(int i=0; i<= this.num_restr; i++) {
+            final int size = aux.get(aux.size()-1).size();
+            for(int j=size-2; j>=  size-this.num_restr-1; j--) {
+                aux.get(i).remove(j);
+            }
+        }
+
+        printPl(aux);
+        return aux;
+
+    }
+
+    private void printCertificate(ArrayList<ArrayList<Double>> aux) {
+        for(int j = 0; j< this.num_restr; j++) {
+            System.out.print(aux.get(0).get(j)+" ");
+        }
+    }
+
+    public void checkBasic(ArrayList<ArrayList<Double>> lp) {
+        int b = 0;
+        for(int j=this.num_restr; j < lp.get(0).size()-1; j++) {
+
+        }
     }
 }

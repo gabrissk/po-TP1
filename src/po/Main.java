@@ -18,12 +18,13 @@ public class Main {
             pl.setVar_type(i, Integer.parseInt(var_types[i]));
         }
         String func[] = scan.nextLine().split(" ");
-        pl.lp.add(new ArrayList<>());
+        //pl.lp.add(new ArrayList<>());
         for(int i=0; i<vars;i++) {
-            pl.getFunc().add(Double.parseDouble(func[i]));
+            //pl.getFunc().add(Double.parseDouble(func[i]));
             pl.setFunc(i, Double.parseDouble(func[i]));
         }
         pl.getFunc().add(pl.getFunc().size(), 0.0);
+        pl.lp.add(0, pl.getFunc());
         for(int i=0; i< num_restr; i++) {
             pl.lp.add(new ArrayList<>());
             String restr = scan.nextLine();
@@ -41,14 +42,31 @@ public class Main {
         pl.FPI();
         pl.printPl(pl.lp);
         if(!pl.hasBasicSol()) {
-            pl.auxLp();
+            pl.lp = pl.auxLp();
+            pl.printPl(pl.lp);
+            pl.lp.set(0, pl.getFunc());
+            for(int j=0; j< pl.num_restr-pl.basic; j++) {
+                pl.lp.get(0).add(0, 0.0);
+            }
+            pl.printPl(pl.lp);
+            System.out.println(pl.bases);
+            for(int i:pl.bases.keySet()) {
+                pl.pivot(pl.lp, i, pl.bases.get(i));
+            }
+            pl.printPl(pl.lp);
+
+            int i = pl.solve(pl.lp, false);
+            System.out.println();
+            pl.printPl(pl.lp);
+            System.out.println(i);
+        }
+        else {
+            int i = pl.solve(pl.lp, true);
+            System.out.println();
+            pl.printPl(pl.lp);
+            System.out.println(i);
         }
 
-        /*int i = pl.solve(pl.lp);
-        System.out.println();
-        pl.printPl(pl.lp);
-        System.out.println(i);
-*/
 
     }
 }
