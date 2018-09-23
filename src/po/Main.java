@@ -11,15 +11,12 @@ public class Main {
 
         Scanner scan = new Scanner(new File(args[0]));
         int vars = Integer.parseInt(scan.nextLine());
-        System.out.println(vars);
         int num_restr = Integer.parseInt(scan.nextLine());
-        System.out.println(num_restr);
         Pl pl = new Pl(vars, num_restr);
         String[] var_types = scan.nextLine().split(" ");
         for(int i= 0; i< pl.var_type.length; i++) {
             pl.setVar_type(i, Integer.parseInt(var_types[i]));
         }
-        System.out.println(Arrays.toString(pl.getVar_type()));
         String func[] = scan.nextLine().split(" ");
         pl.lp.add(new ArrayList<>());
         for(int i=0; i<vars;i++) {
@@ -39,24 +36,19 @@ public class Main {
             pl.setRestr_type(i, split[j++].charAt(0));
             pl.getRestriction(i).add(Double.parseDouble(split[j]));
         }
-        System.out.println();
-        pl.printPl();
         pl.nNegativity();
-        System.out.println();
-        pl.printPl();
-        System.out.println();
+        pl.printPl(pl.lp);
         pl.FPI();
-        pl.printPl();
+        pl.printPl(pl.lp);
+        if(!pl.hasBasicSol()) {
+            pl.auxLp();
+        }
 
-        /*System.out.println(pl.checkB());
-        System.out.println(pl.choose());
-        System.out.println(pl.checkC());*/
-
-        int i = pl.solve();
+        /*int i = pl.solve(pl.lp);
         System.out.println();
-        //pl.printPl();
+        pl.printPl(pl.lp);
         System.out.println(i);
-
+*/
 
     }
 }
